@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <StartupObject>WindowGotoZero.Program</StartupObject>
+    <RootNamespace>WindowGotoZero</RootNamespace>
+    <AssemblyName>WindowGotoZero</AssemblyName>
+    <Product>Window Goto Zero</Product>
+    <Description>Move a selected window to primary display origin (0,0).</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>

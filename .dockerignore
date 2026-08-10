@@ -1,0 +1,12 @@
+.git
+.vs
+.vscode
+dist
+bin
+obj
+**/.DS_Store
+**/Thumbs.db
+*.user
+*.suo
+README.md
+scripts

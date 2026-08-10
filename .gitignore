@@ -1,0 +1,23 @@
+# Build
+bin/
+obj/
+dist/
+out/
+publish/
+installer/output/
+release/
+
+# Portable tooling (local SDK / Inno Setup)
+.tools/
+
+# IDE / OS
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log

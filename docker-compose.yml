@@ -1,0 +1,14 @@
+# Windows containers only (WinForms needs Windows Desktop targeting pack).
+# Switch Docker Desktop to Windows containers before use.
+#
+# isolation:
+#   - Omit to let Docker choose (often process on matching hosts).
+#   - If process isolation fails due to OS mismatch, set:
+#       isolation: hyperv
+services:
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .\dist:C:\dist
