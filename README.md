@@ -8,11 +8,18 @@
 
 ## ダウンロード（利用者向け）
 
-[Releases](https://github.com/fumokmm/window-goto-zero/releases) から ZIP を入手してください。
+最新の配布物は [GitHub Releases](https://github.com/fumokmm/window-goto-zero/releases/tag/v1.1.0) から入手できます。
 
-1. `WindowGotoZero-Setup-1.0.0.zip` を展開する  
-2. `WindowGotoZero-Setup-1.0.0.exe` を実行する  
-3. インストール後、スタートメニューから **Window Goto Zero** を起動する  
+- [インストーラー（`WindowGotoZero-Setup-1.1.0.exe`）](https://github.com/fumokmm/window-goto-zero/releases/download/v1.1.0/WindowGotoZero-Setup-1.1.0.exe)（推奨）
+- [ZIP（`WindowGotoZero-1.1.0.zip`）](https://github.com/fumokmm/window-goto-zero/releases/download/v1.1.0/WindowGotoZero-1.1.0.zip)
+- [EXE（`WindowGotoZero-1.1.0.exe`）](https://github.com/fumokmm/window-goto-zero/releases/download/v1.1.0/WindowGotoZero-1.1.0.exe)
+
+インストーラーを使う場合:
+
+1. `WindowGotoZero-Setup-1.1.0.exe` を実行する
+2. インストール後、スタートメニューから **Window Goto Zero** を起動する
+
+ZIP / EXEを使う場合は、ZIPを展開するかEXEを直接起動してください。いずれも .NET 8 Desktop Runtime (x64) が必要です。
 
 | 項目 | 内容 |
 |------|------|
@@ -31,8 +38,10 @@
 ## できること
 
 - トップレベルウィンドウの一覧（タイトル / プロセス / 位置）
+- 列見出しをクリックした一覧のソート（タイトル / プロセス / 位置 / サイズ）
 - 選択ウィンドウを座標 `(0, 0)` へ移動
 - 最小化・最大化はいったん復元してから移動
+- 「ヘルプ」→「バージョン情報」からアプリ情報と配布先を確認
 
 ## 制限
 
@@ -59,7 +68,7 @@
 | 成果物 | パス |
 |--------|------|
 | 実行ファイル | `dist\WindowGotoZero.exe` |
-| セットアップ | `installer\output\WindowGotoZero-Setup-1.0.0.exe` |
+| セットアップ | `installer\output\WindowGotoZero-Setup-1.1.0.exe` |
 
 ### 構成
 

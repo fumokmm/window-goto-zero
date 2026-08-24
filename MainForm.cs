@@ -1,3 +1,4 @@
+using System.Collections;
 using WindowGotoZero.Services;
 
 namespace WindowGotoZero;
@@ -10,6 +11,8 @@ internal sealed class MainForm : Form
     private readonly Button _moveButton;
     private readonly Label _statusLabel;
     private readonly Label _hintLabel;
+    private int _sortColumn;
+    private SortOrder _sortOrder = SortOrder.Ascending;
 
     public MainForm()
     {
@@ -28,6 +31,19 @@ internal sealed class MainForm : Form
         {
             Icon = LoadLooseIcon();
         }
+
+        var menuStrip = new MenuStrip
+        {
+            Dock = DockStyle.Top,
+            Font = Font,
+        };
+        var helpMenu = new ToolStripMenuItem("ヘルプ");
+        helpMenu.DropDownItems.Add(new ToolStripMenuItem(
+            "バージョン情報",
+            image: null,
+            onClick: (_, _) => ShowAboutDialog()));
+        menuStrip.Items.Add(helpMenu);
+        MainMenuStrip = menuStrip;
 
         _hintLabel = new Label
         {
@@ -50,7 +66,10 @@ internal sealed class MainForm : Form
         _windowList.Columns.Add("タイトル", 360);
         _windowList.Columns.Add("プロセス", 140);
         _windowList.Columns.Add("位置 / サイズ", 200);
+        _windowList.ColumnClick += (_, e) => SortWindowList(e.Column);
         _windowList.DoubleClick += (_, _) => MoveSelectedWindow();
+        _windowList.ListViewItemSorter = new WindowListItemComparer(_sortColumn, _sortOrder);
+        UpdateSortHeaders();
 
         _refreshButton = new Button
         {
@@ -101,9 +120,16 @@ internal sealed class MainForm : Form
         Controls.Add(listHost);
         Controls.Add(buttonPanel);
         Controls.Add(_hintLabel);
+        Controls.Add(menuStrip);
 
         AcceptButton = _moveButton;
         Shown += (_, _) => RefreshWindowList();
+    }
+
+    private void ShowAboutDialog()
+    {
+        using var aboutForm = new AboutForm(Icon);
+        aboutForm.ShowDialog(this);
     }
 
     private void RefreshWindowList()
@@ -125,12 +151,21 @@ internal sealed class MainForm : Form
                 item.SubItems.Add(window.ProcessName);
                 item.SubItems.Add(window.PositionText);
                 _windowList.Items.Add(item);
+            }
 
-                if (selectedHandle != IntPtr.Zero && window.Handle == selectedHandle)
+            _windowList.Sort();
+
+            if (selectedHandle != IntPtr.Zero)
+            {
+                foreach (ListViewItem item in _windowList.Items)
                 {
-                    item.Selected = true;
-                    item.Focused = true;
-                    item.EnsureVisible();
+                    if (item.Tag is WindowInfo window && window.Handle == selectedHandle)
+                    {
+                        item.Selected = true;
+                        item.Focused = true;
+                        item.EnsureVisible();
+                        break;
+                    }
                 }
             }
 
@@ -141,6 +176,38 @@ internal sealed class MainForm : Form
         {
             _statusLabel.Text = "一覧の取得に失敗しました。";
             MessageBox.Show(this, ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void SortWindowList(int column)
+    {
+        if (_sortColumn == column)
+        {
+            _sortOrder = _sortOrder == SortOrder.Ascending
+                ? SortOrder.Descending
+                : SortOrder.Ascending;
+        }
+        else
+        {
+            _sortColumn = column;
+            _sortOrder = SortOrder.Ascending;
+        }
+
+        _windowList.ListViewItemSorter = new WindowListItemComparer(_sortColumn, _sortOrder);
+        _windowList.Sort();
+        UpdateSortHeaders();
+    }
+
+    private void UpdateSortHeaders()
+    {
+        var headers = new[] { "タイトル", "プロセス", "位置 / サイズ" };
+        var indicator = _sortOrder == SortOrder.Ascending ? " ▲" : " ▼";
+
+        for (var i = 0; i < headers.Length; i++)
+        {
+            _windowList.Columns[i].Text = i == _sortColumn
+                ? headers[i] + indicator
+                : headers[i];
         }
     }
 
@@ -192,5 +259,72 @@ internal sealed class MainForm : Form
         }
 
         return File.Exists(candidate) ? new Icon(candidate) : null;
+    }
+
+    private sealed class WindowListItemComparer : IComparer
+    {
+        private readonly int _column;
+        private readonly SortOrder _sortOrder;
+
+        public WindowListItemComparer(int column, SortOrder sortOrder)
+        {
+            _column = column;
+            _sortOrder = sortOrder;
+        }
+
+        public int Compare(object? x, object? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return 0;
+            }
+
+            if (x is not ListViewItem leftItem || y is not ListViewItem rightItem
+                || leftItem.Tag is not WindowInfo left
+                || rightItem.Tag is not WindowInfo right)
+            {
+                return 0;
+            }
+
+            var result = _column switch
+            {
+                0 => CompareText(left.Title, right.Title),
+                1 => CompareText(left.ProcessName, right.ProcessName),
+                2 => ComparePosition(left, right),
+                _ => 0,
+            };
+
+            if (result == 0 && _column != 0)
+            {
+                result = CompareText(left.Title, right.Title);
+            }
+
+            if (result == 0)
+            {
+                result = left.Handle.ToInt64().CompareTo(right.Handle.ToInt64());
+            }
+
+            return _sortOrder == SortOrder.Descending ? -result : result;
+        }
+
+        private static int CompareText(string left, string right)
+        {
+            var result = StringComparer.CurrentCultureIgnoreCase.Compare(left, right);
+            return result != 0
+                ? result
+                : StringComparer.Ordinal.Compare(left, right);
+        }
+
+        private static int ComparePosition(WindowInfo left, WindowInfo right)
+        {
+            var result = left.Left.CompareTo(right.Left);
+            if (result != 0) return result;
+
+            result = left.Top.CompareTo(right.Top);
+            if (result != 0) return result;
+
+            result = left.Width.CompareTo(right.Width);
+            return result != 0 ? result : left.Height.CompareTo(right.Height);
+        }
     }
 }
