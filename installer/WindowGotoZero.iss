@@ -5,7 +5,7 @@
 ; App is framework-dependent (small). Requires .NET 8 Desktop Runtime (x64).
 
 #define MyAppName "Window Goto Zero"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "fumokmm"
 #define MyAppURL "https://github.com/fumokmm/window-goto-zero"
 #define MyAppExeName "WindowGotoZero.exe"
